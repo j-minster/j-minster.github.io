@@ -1,0 +1,78 @@
+<html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <title>Getting Up and Running With Dyalog APL in Doom Emacs - My Site</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <script src="http://localhost:8080/static/js/main.js"></script>
+    <link rel="stylesheet" href="http://localhost:8080/static/css/main.css" type="text/css" media="screen" />
+    <style>
+    </style>
+  </head>
+
+  <body style="display: flex;">
+    <main style="width: 600px; margin: 0 auto; padding: 32px;">
+      <div><section></section><h1 id="Introduction">Introduction</h1><section><p>I would like to show you how I got <code>APL</code> working in emacs. You can interact with APL either through GNU-APL or through Dyalog-APL. Here is a quick rundown on both options (I mix and match features from both):</p></section><h1 id="Why do this?">Why do this?</h1><section><p>I&apos;m stubborn. I don&apos;t want to use RIDE for everything, even though it&apos;s capable. I like that I can bend emacs to do what I want. I also want to take notes on APL as I&apos;m learning it through such wonderful resources as <a href="https://xpqz.github.io/learnapl/intro.html">xpqz&apos;s introduction to APL</a>. This setup lets you enter and evaluate APL using <code>org-babel</code> blocks inside <code>org-mode</code>. This might seem like a small thing, but there is so much insight you can gain by experimenting and just messing around with things. This method of interaction with the language encourages exploration and makes it <b>easy</b>.</p></section><h1 id="[[https://www.gnu.org/software/apl/][GNU APL]] ([[https://github.com/lokedhs/gnu-apl-mode][gnu-apl-mode.el]])"><a href="https://www.gnu.org/software/apl/">GNU APL</a> (<a href="https://github.com/lokedhs/gnu-apl-mode">gnu-apl-mode.el</a>)</h1><section><p>When we talk about this, we mean the wonderful <a href="https://github.com/lokedhs/gnu-apl-mode">emacs package by lokedhs</a>. You will need this emacs package along-side an executable of gnu-apl on your system for this to work. This GNU implementation differs in syntax/glyphs from the Dyalog flavour of APL.</p></section><h2 id="Pros">Pros</h2><section><ul><li><p>Native to emacs</p></li><li><p>Comes with cool input methods for typing glyphs (including the APL-Z layout)</p></li><li><p>Can show the APL keymap in a mini-buffer by calling <code>M-x gnu-apl-show-keyboard</code> once you have a session fired up</p></li><li><p>You can create plots using the in-built GNUPlot functions</p></li><li><p>The REPL is great</p></li><li><p>Everything is inspectable and customisable</p></li></ul></section><h2 id="Cons">Cons</h2><section><ul><li><p>The GNU implementation is not as widely used</p></li><li><p>Syntax/glyphs differ from what you may be used to with Dyalog APL</p></li><li><p>Documentation is sparse. You will find yourself reading the elisp to see how to do things (like plotting!)</p></li></ul></section><h2 id="Setup and use">Setup and use</h2><section><p>The setup here is pretty simple. You can just load the package however you normally like. I&apos;m using doom emacs, so in my <code>packages.el</code> I have:</p><pre class="example">(package! gnu-apl-mode)
+</pre><p>I then issue <code>SPC h r r</code> to call <code>doom/reload</code>, which will fetch and install the package. I&apos;m on macOS, so I also went ahead and installed gnu-apl <a href="https://formulae.brew.sh/formula/gnu-apl">using brew</a>:</p><div class="org-src-container"><pre class="src src-sh">brew install gnu-apl
+</pre></div><p>This will install the executable on your system, which <code>gnu-apl-mode</code> will then access and interact with.</p><p>To use this package, call <code>gnu-apl</code> in emacs, which will create a repl buffer and initiate an APL session for you to mess around with.</p><p>Input is taken care of by <code>gnu-apl-mode</code> which starts when the <code>gnu-apl</code> buffer pops up. Check out the keyboard by calling <code>gnu-apl-show-keyboard</code>. All keys are either prefixed by the super-key, or super-shift for the secondary layer. The <code>APL-Z</code> input method is also included in the package. Call <code>set-input-method</code> and select <code>APL-Z</code>. This gives you the option to input glyphs using &apos;.&apos; as a leader key. For example, we want the glyph &apos;iota&apos;, we hit <code>.i</code> and it prints <code>⍳</code> in our repl.</p><p>I use this input method when I am working with <code>org-babel</code> blocks using the jupyter-apl kernel, which I will show you how to install in the next section.</p></section><h1 id="Dyalog APL">Dyalog APL</h1><section><p>I&apos;m talking about the <a href="https://github.com/Dyalog/dyalog-jupyter-kernel">jupyter kernel for Dyalog APL</a>, which is officially distributed by Dyalog.</p></section><h2 id="Pros">Pros</h2><section><ul><li><p>The most widely used implementation of APL right now (2022)</p></li><li><p>Always being updated</p></li><li><p>Large community support</p></li><li><p>Great resources such as the APLWiki, APLcart and <a href="https://github.com/aplteam/Tatin">tatin</a>.</p></li><li><p>Compatible with org-babel</p></li></ul></section><h2 id="Cons">Cons</h2><section><ul><li><p>Sometimes janky interaction with the jupyter-repl</p></li><li><p>Some massaging of the kernel necessary to work well in emacs</p></li><li><p>worse repl than with GNU APL (repl support through <a href="https://github.com/nnicandro/emacs-jupyter">emacs-jupyter.el</a>)</p></li></ul></section><h2 id="Setup and use">Setup and use</h2><section><p>Setup is more involved than the native method. I will not cover setting up <code>emacs-jupyter</code>, or installing <code>jupyter</code> on your system (using PIP or otherwise). Those are the prerequisites. These are easily satisfied by using <a href="https://github.com/hlissner/doom-emacs">doom emacs</a>, which does a lot of configuration work for you. Here are the steps:</p><p>Clone the repository for dyalog-jupyter and <code>cd</code> into it. Go ahead and open <code>kernel.py</code> (which lives in the &apos;dyalog_kernel&apos; folder) in your favourite text editor (emacs). Search for the method <code>out_result</code> and look for a dictionary named <code>_content</code>. For me, it was on line 119. Inside of the <code>_content</code> dictionary there are two definitions of the <code>data</code> MIME-types. We want <code>text/plain</code> for babel blocks. This is what they want to receieve from the kernel. Comment out the key/value pair which contains &apos;html&apos;. It should look like this after you edit it:</p><div class="org-src-container"><pre class="src src-python">    def out_result(self, s):
+        # injecting css: white-space:pre. Means no wrapping, RIDE SetPW will take care about line wrapping
+
+        html_start = &apos;&lt;span style=&quot;white-space:pre; font-family: monospace&quot;&gt;&apos;
+        html_end = &apos;&lt;/span&gt;&apos;
+
+        _content = {
+            # &apos;output_type&apos;: &apos;display_data&apos;,
+            &apos;data&apos;: {&apos;text/plain&apos;: s},
+            #&apos;data&apos;: {&apos;text/html&apos;: html_start + html.escape(s, False) + html_end},
+            &apos;execution_count&apos;: self.execution_count,
+            &apos;metadata&apos;: {},
+
+            # &apos;transient&apos;: &apos;&apos;
+        }
+</pre></div><p>After you&apos;ve modified, go ahead and save this file. Go back to the project root and run the install script:</p><div class="org-src-container"><pre class="src src-sh">./install.sh
+</pre></div><p>This should install the kernel to your <code>jupyter</code> kernelspec list. Check if it worked by running:</p><div class="org-src-container"><pre class="src src-sh">jupyter lab
+</pre></div><p>It should take you to the jupyter interface and in the list of available kernels you should see &apos;Dyalog APL&apos;.</p><p>To run this in <code>org-babel</code>, create a source block how you normally would and use <code>jupyter-apl</code> as the kernelspec:</p><pre class="example">#+begin_src jupyter-apl :session *new*
+⍳5
+</pre><p>#+end_src</p><p>Hitting enter inside this block should give you a list as output. If you get an error saying something about jupyter, try to run this in your terminal:</p><div class="org-src-container"><pre class="src src-sh">pip3 install jupyter
+</pre></div><p>and then re-run the <code>install.sh</code> script in the <code>dyalog-jupyter-kernel</code> folder you pulled from git.</p><p>As for entering glyphs, follow the input guide in the section on <code>gnu-apl</code> and use the input method from that package.</p></section></div>
+    </main>
+
+    <aside style="padding: 32px; width: 300px;">
+     <section><ol><li><a href="#Introduction">Introduction</a></li><li><a href="#Why do this?">Why do this?</a></li><li><a href="#[[https://www.gnu.org/software/apl/][GNU APL]] ([[https://github.com/lokedhs/gnu-apl-mode][gnu-apl-mode.el]])"><span>GNU APL</span> (<span>gnu-apl-mode.el</span>)</a></li><ol><li><a href="#Pros">Pros</a></li><li><a href="#Cons">Cons</a></li><li><a href="#Setup and use">Setup and use</a></li></ol><li><a href="#Dyalog APL">Dyalog APL</a></li><ol><li><a href="#Pros">Pros</a></li><li><a href="#Cons">Cons</a></li><li><a href="#Setup and use">Setup and use</a></li></ol></section>
+      
+  
+
+      
+  
+
+      
+  
+    <section>
+      <details open>
+        <summary>Sitemap</summary>
+        <ul>
+          
+            <li>
+              <a href=http://localhost:8080/emacs_APL_tutorial.html>Getting up and running with dyalog apl in doom emacs
+                
+              </a>
+            </li>
+          
+            <li>
+              <a href=http://localhost:8080/index.html>Index
+                
+              </a>
+            </li>
+          
+        </ul>
+      </details>
+    </section>
+  
+
+      
+  
+
+    </aside>
+  </body>
+</html>
