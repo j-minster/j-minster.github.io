@@ -1,0 +1,70 @@
+<html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <title>Building PrBoom+ on an M1 Mac - My Site</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <script src="https://j-minster.github.io/static/js/main.js"></script>
+    <link rel="stylesheet" href="https://j-minster.github.io/static/css/main.css" type="text/css" media="screen" />
+    <style>
+    </style>
+  </head>
+
+  <body style="display: flex;">
+    <main style="width: 600px; margin: 0 auto; padding: 32px;">
+      <div><section></section><h1 id="Introduction and background">Introduction and background</h1><section><ul><li><p><code>PrBoom+</code> is a source port of doom. It does not run the original doom code from id software, but re-implements a superset of the features, while still staying true to the original aesthetics of doom.</p></li><li><p>It&apos;s not the only way of playing doom on your mac, and its not even the easiest way</p></li><li><p>There are multiple different ways to run doom:</p><ul><li><p>You can install and play <code>crispy-doom</code> (<a href="https://formulae.brew.sh/formula/crispy-doom">here</a>)</p></li><li><p>Or you can use the <a href="https://docs.libretro.com/library/prboom/">PrBoom libretro core</a> inside of <a href="https://formulae.brew.sh/cask/retroarch-metal">retroarch</a></p></li><li><p>You can install and play <a href="https://macsourceports.com/game/doom">GZDoom</a></p></li></ul></li><li><p>This source-port seems to be the most faithful to the original aesthetics of doom and is widely favoured by the doom community</p></li><li><p>I couldn&apos;t find a proper guide on how to get it running on a mac, so here we go!</p></li></ul></section><h1 id="Prerequisite files">Prerequisite files</h1><section><ul><li><p><b>One or more</b> of:</p><ul><li><p><code>DOOM.WAD</code> :: Full WADfiles from a doom 1 installation</p></li><li><p><code>DOOM2.WAD</code> :: Full WADfiles from a doom 2 installation</p></li><li><p><code>DOOM1.WAD</code> :: The shareware version of doom 1</p></li></ul></li><li><p>Here&apos;s a <a href="https://macsourceports.com/faq#getgamedata">good guide</a> on extracting these files if you don&apos;t already have them</p></li><li><p>You can also just find them on Archive.org</p></li></ul></section><h1 id="Install dependencies">Install dependencies</h1><h2 id="Install Brew">Install Brew</h2><section><ul><li><p>Install <code>brew</code> if you don&apos;t already have it, as we will use it in later steps:</p></li><li><p>Fire up your terminal and run:</p></li></ul><div class="org-src-container"><pre class="src src-sh">/bin/bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&quot;
+</pre></div></section><h2 id="Install from Brew">Install from Brew</h2><section><ul><li><p>I used some instructions from the following links to gather a list of dependencies to install:</p><ul><li><p>https://github.com/Ratintosh/prboom-plus</p></li><li><p>https://gist.github.com/AlexanderRevo/da5e4b2a4d731ff87a69da8d6a1c2865</p></li></ul></li></ul><div class="org-src-container"><pre class="src src-jupyter-julia">brew install sdl2_image sdl2 sdl2_net sdl2_mixer fluid-synth portmidi libvorbis automake autoconf sdl2 sdl2_net sdl2_image sdl2_mixer libpng pkg-config cmake
+</pre></div><ul><li><p>Wait &apos;til brew chugs through all of those and move onto the next step</p></li></ul></section><h1 id="Clone the repo">Clone the repo</h1><section><ul><li><p>Here is a link to the repo we&apos;ll be using:</p><ul><li><p>https://github.com/coelckers/prboom-plus</p></li></ul></li><li><p>Open your terminal and run the following:</p></li></ul><div class="org-src-container"><pre class="src src-sh">git clone  https://github.com/coelckers/prboom-plus
+</pre></div><ul><li><p>This will pull the project source files</p></li><li><p><code>cd</code> into the newly created directory, then into the <code>prboom2</code> folder</p></li></ul></section><h1 id="build using =cmake=">build using <code>cmake</code></h1><section><ul><li><p>I followed the <a href="https://cmake.org/cmake/help/latest/guide/tutorial/A%20Basic%20Starting%20Point.html#build-and-run">&apos;Basic Starting Point</a>&apos; documentation on the <code>cmake</code> site</p></li><li><p>Here are the steps I took to build:</p></li></ul><ol><li><p>In the <code>prboom2</code> folder, create another folder named <code>build</code>:</p></li></ol><div class="org-src-container"><pre class="src src-sh">mkdir build &amp; cd build
+</pre></div><ol><li><p>Generate a native build system by running:</p></li></ol><div class="org-src-container"><pre class="src src-sh">cmake ../
+</pre></div><ol><li><p>Finally, build the executables we need to run the game:</p></li></ol><div class="org-src-container"><pre class="src src-sh">cmake --build .
+</pre></div><ul><li><p>This should result in a <code>build</code> folder that looks like this:
+  <img src="https://j-minster.github.io/data/build.png"/></p></li><li><p>We can now move on and get our <code>WAD</code> files in the right place for our launcher to see</p></li></ul></section><h1 id="Place =WAD= files in the proper directory">Place <code>WAD</code> files in the proper directory</h1><section><ul><li><p>Get <b>one or more</b> of the following files:</p><ul><li><p><code>DOOM.WAD</code></p></li><li><p><code>DOOM2.WAD</code></p></li></ul></li><li><p>Also, grab <code>prboom-plus.wad</code> from the <code>build</code> directory we made earlier</p></li><li><p>Place the mentioned files in:</p><ul><li><p><code>~/Library/Application\ Support/PrBoom-Plus</code></p></li></ul></li></ul></section><h1 id="Configure =prboom-plus=">Configure <code>prboom-plus</code></h1><section><ul><li><p><i>This step is optional</i></p></li><li><p>On first run, the game creates <code>prboom-plus.cfg</code> in the same directory where your <code>WAD</code> files are stored</p><ul><li><p>You can configure this file yourself, but I cannot find documentation on how to set this stuff</p></li></ul></li><li><p>One good option is to move the default config somewhere else and use Decino&apos;s config:</p><ul><li><p>http://decino.nl/doom/prboom-plus.cfg</p></li><li><p><a href="https://www.youtube.com/watch?v=TNhpvhOdzRE">Here&apos;s a good example of what it looks like</a></p></li></ul></li></ul></section><h1 id="Gib some demons!">Gib some demons!</h1><section><ul><li><p>Head back to the <code>build</code> directory</p></li><li><p>There you&apos;ll notice a <code>Launcher.app</code></p></li><li><p>It built us a nice Apple Silicon application</p></li><li><p>Use it as you would any other: you can transfer it to <code>/Applications</code> or just keep it in <code>build</code></p></li><li><p>Double click the launcher and hit Launch</p></li><li><p>Happy gibbing!</p></li></ul><p><img src="https://j-minster.github.io/data/launcher.png"/>
+<img src="https://j-minster.github.io/data/doom.png"/></p></section></div>
+    </main>
+
+    <aside style="padding: 32px; width: 300px;">
+     <section><ol><li><a href="#Introduction and background">Introduction and background</a></li><li><a href="#Prerequisite files">Prerequisite files</a></li><li><a href="#Install dependencies">Install dependencies</a></li><ol><li><a href="#Install Brew">Install Brew</a></li><li><a href="#Install from Brew">Install from Brew</a></li></ol><li><a href="#Clone the repo">Clone the repo</a></li><li><a href="#build using =cmake=">build using <code>cmake</code></a></li><li><a href="#Place =WAD= files in the proper directory">Place <code>WAD</code> files in the proper directory</a></li><li><a href="#Configure =prboom-plus=">Configure <code>prboom-plus</code></a></li><li><a href="#Gib some demons!">Gib some demons!</a></li></ol></section>
+      
+  
+
+      
+  
+
+      
+  
+    <section>
+      <details open>
+        <summary>Sitemap</summary>
+        <ul>
+          
+            <li>
+              <a href=https://j-minster.github.io/building-prboom-macos.html>Building prboom+ on an m1 mac
+                
+              </a>
+            </li>
+          
+            <li>
+              <a href=https://j-minster.github.io/emacs_APL_tutorial.html>Getting up and running with dyalog apl in doom emacs
+                
+              </a>
+            </li>
+          
+            <li>
+              <a href=https://j-minster.github.io/index.html>Index
+                
+              </a>
+            </li>
+          
+        </ul>
+      </details>
+    </section>
+  
+
+      
+  
+
+    </aside>
+  </body>
+</html>
