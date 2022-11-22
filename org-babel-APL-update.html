@@ -1,0 +1,91 @@
+<html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <title>APL and org-babel: Further Improvements - My Site</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <script src="https://j-minster.github.io/static/js/main.js"></script>
+    <link rel="stylesheet" href="https://j-minster.github.io/static/css/main.css" type="text/css" media="screen" />
+    <style>
+    </style>
+  </head>
+
+  <body style="display: flex;">
+    <main style="width: 600px; margin: 0 auto; padding: 32px;">
+      <div><section></section><h1 id="Foreword">Foreword</h1><section><ul><li><p>This article goes in assuming that you&apos;ve read and have performed the steps found <a href="file:emacs_APL_tutorial.org::+TITLE: Getting Up and Running With Dyalog APL in Doom Emacs">here</a></p></li><li><p>This article will show how to get further niceties using <code>APL</code> in <code>org-babel</code> source-blocks</p></li><li><p>I&apos;ve been using this to learn <code>APL</code> using literate programming, the same as a jupyter session, but in emacs</p></li><li><p>This could also be used to write books and articles easily without needing to copy/paste output from <code>RIDE</code></p></li><li><p>It will improve on that article in these aspects:</p><ul><li><p>Glyph input :: Using <code>dyalog-apl-input</code> from <a href="https://github.com/harsman/dyalog-mode">=dyalog-mode=</a></p></li><li><p>Proper fontification :: previously I just had to turn off <code>mixed-pitch-mode</code> and have everything monospace, including prose (not good)</p></li><li><p>Syntax hilighting :: Also using <code>dyalog-mode</code></p></li></ul></li></ul></section><h1 id="Package installation">Package installation</h1><section><ul><li><p>There&apos;s only one package to install, <code>dyalog-mode</code> (<a href="https://github.com/harsman/dyalog-mode">here</a>)</p></li><li><p>Follow the installation steps in the <code>README</code>, then come back here to set up the functionality for org source blocks</p></li></ul></section><h1 id="Configuration">Configuration</h1><section><ul><li><p>Now that <code>dyalog-mode</code> is installed, we can trick <code>org-babel</code> into giving us syntax hilighting from <code>dyalog-mode</code>, but execute using <code>jupyter-apl</code> (through the <code>APL</code> Jupyter kernel installed in my previous article)</p></li><li><p>When you enter the language for a source-block, <code>org-babel</code> infers what major-mode the code would normally run in</p></li><li><p>If you enter <code>racket</code>, say, as the language for a source-block, if <code>org-src-fontify-natively</code> is non-nil the function <code>org-src-font-lock-fontify-block</code> will spawn a buffer with the inferred major-mode (<code>racket-mode</code>) and display the block with the same syntax highlighting</p></li><li><p>From this you also get language-aware indentation and some other things the major mode provides</p></li><li><p>We will use <code>dyalog</code> as the language for our src-blocks, but since <code>dyalog-mode</code> doesn&apos;t let us execute those blocks, we will do that using <code>jupyter-apl</code></p></li><li><p>We will create two &apos;cloned&apos; functions that will run when we hit <code>RET</code> inside our <code>dyalog</code> src-blocks. They will call <code>jupyter-apl</code> to do the execution</p></li><li><p>Hopefully that explains the thought behind the following code we need:</p></li></ul><div class="org-src-container"><pre class="src src-emacs-lisp">(use-package! ob-eval
+  :config
+  ;; Here are our cloned functions
+  (defun org-babel-execute:dyalog (body params)
+    (org-babel-execute:jupyter-apl body params))
+
+  (defun org-babel-dyalog-initiate-session (&amp;optional arg1 arg2)
+    (org-babel-jupyter-apl-initiate-session &amp;optional arg1 arg2))
+
+  (setq org-babel-default-header-args:jupyter-apl &apos;((:kernel . &quot;dyalog-kernel&quot;)
+                                                    (:session . &quot;*new*&quot;)
+                                                    (:exports . &quot;both&quot;)
+                                                    (:eval . &quot;never-export&quot;))
+
+        ;; copy jupyter-apl settings for `dyalog&apos; blocks - which are really
+        ;; jupyter-apl blocks with `dyalog&apos; syntax hilighting
+        org-babel-default-header-args:dyalog &apos;((:kernel . &quot;dyalog-kernel&quot;)
+                                               (:session . &quot;*new*&quot;)
+                                               (:exports . &quot;both&quot;)
+                                               (:eval . &quot;never-export&quot;))))
+</pre></div><ul><li><p>As for using <code>dyalog-apl-input</code>, I just enable that manually for now using <code>set-input-method</code></p></li><li><p>If you can&apos;t see <code>dyalog-apl-input</code>, just call <code>load-library</code> or <code>require</code> it in your config</p></li></ul></section><h1 id="Result">Result</h1><section><ul><li><p>Here&apos;s what you should see when you create <code>dyalog</code> src-blocks in your <code>.org</code> files now:</p></li></ul><p><img src="./data/apl-block.png"/></p><ul><li><p>To be clear, you need to enter:</p></li></ul><pre class="example">#+begin_src: dyalog
+&lt;insane APL stuff&gt;
+#+end_src
+</pre><ul><li><p>The fancy hiding/presentation is from <code>org-modern</code> (<a href="https://github.com/minad/org-modern">here</a>) and <code>org-modern-indent</code> (<a href="https://github.com/jdtsmith/org-modern-indent">here</a>), thank you to Daniel Mendler (minad) and jdtsmith for those wonderful packages</p></li><li><p>Also thanks to Joakim Hårsman for <code>dyalog-mode</code>, Dyalog company for <code>dyalog-jupyter-kernel</code> and to all the excellent people working on <code>org-mode</code> and emacs</p></li></ul></section><h1 id="Conclusion">Conclusion</h1><section><ul><li><p>I&apos;ve been struggling with creating a comfortable environment for hacking on APL, but I think it&apos;s finally here</p></li><li><p>Of course we could just save all this time and these years of yak-shaving by simply using Jupyter, but <b>where&apos;s the fun in that?</b></p></li></ul></section></div>
+    </main>
+
+    <aside style="padding: 32px; width: 300px;">
+     <section><ol><li><a href="#Foreword">Foreword</a></li><li><a href="#Package installation">Package installation</a></li><li><a href="#Configuration">Configuration</a></li><li><a href="#Result">Result</a></li><li><a href="#Conclusion">Conclusion</a></li></ol></section>
+      
+  
+
+      
+  
+
+      
+  
+    <section>
+      <details open>
+        <summary>Sitemap</summary>
+        <ul>
+          
+            <li>
+              <a href=https://j-minster.github.io/org-babel-APL-update.html>Apl and org-babel: further improvements
+                
+              </a>
+            </li>
+          
+            <li>
+              <a href=https://j-minster.github.io/building-prboom-macos.html>Building prboom+ on an m1 mac
+                
+              </a>
+            </li>
+          
+            <li>
+              <a href=https://j-minster.github.io/emacs_APL_tutorial.html>Getting up and running with dyalog apl in doom emacs
+                
+              </a>
+            </li>
+          
+            <li>
+              <a href=https://j-minster.github.io/index.html>Index
+                
+              </a>
+            </li>
+          
+        </ul>
+      </details>
+    </section>
+  
+
+      
+  
+
+    </aside>
+  </body>
+</html>
